@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#071A2E" />
+<title>Tempo Luanda</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,500&family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --night-top:#050f1f; --night-mid:#071A2E; --night-bot:#0b2a3f;
+    --coral:#FF6F4C; --sand:#F2DEB0; --mist:#CFE8E6;
+    --line: rgba(242,222,176,0.16);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter', sans-serif;
+    color:var(--sand);
+    min-height:100vh;
+    min-height:100dvh;
+    overflow-x:hidden;
+    background:var(--night-mid);
+    transition:background 1.2s ease;
+  }
+  #sky{
+    position:fixed; inset:0; z-index:-2;
+    background: linear-gradient(180deg, var(--top,#071A2E) 0%, var(--mid,#0b2a3f) 55%, var(--bot,#123049) 100%);
+    transition:background 2s ease;
+  }
+  #stars{
+    position:fixed; inset:0; z-index:-1; opacity:0; transition:opacity 1.5s ease;
+    background-image:
+      radial-gradient(1.5px 1.5px at 10% 20%, #fff, transparent),
+      radial-gradient(1px 1px at 30% 10%, #fff, transparent),
+      radial-gradient(1px 1px at 50% 25%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 70% 15%, #fff, transparent),
+      radial-gradient(1px 1px at 85% 30%, #fff, transparent),
+      radial-gradient(1px 1px at 15% 40%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 92% 12%, #fff, transparent),
+      radial-gradient(1px 1px at 60% 5%, #fff, transparent);
+    background-repeat:no-repeat;
+  }
+
+  .wrap{
+    max-width:480px; margin:0 auto;
+    min-height:100vh; min-height:100dvh;
+    display:flex; flex-direction:column;
+    padding:28px 24px 0;
+    position:relative;
+  }
+
+  header{display:flex; justify-content:space-between; align-items:baseline;}
+  .eyebrow{
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--mist); opacity:.8; font-weight:500;
+  }
+  .badge{
+    font-size:11px; letter-spacing:.08em; color:var(--sand); opacity:.55;
+    border:1px solid var(--line); padding:4px 9px; border-radius:99px;
+  }
+
+  .city{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500;
+    font-size:clamp(30px, 8vw, 42px);
+    margin-top:14px;
+    letter-spacing:.01em;
+  }
+  .city span{color:var(--coral); font-style:normal;}
+
+  .clock{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:clamp(58px, 18vw, 94px);
+    line-height:1;
+    margin-top:6px;
+    letter-spacing:-.01em;
+    font-variant-numeric:tabular-nums;
+  }
+  .tz{
+    font-size:13px; color:var(--mist); opacity:.75; margin-top:6px;
+    letter-spacing:.04em;
+  }
+
+  .weather-row{
+    display:flex; align-items:flex-end; gap:16px;
+    margin-top:30px;
+  }
+  .temp{
+    font-family:'Space Grotesk', sans-serif; font-weight:700;
+    font-size:clamp(40px,10vw,56px); line-height:1;
+  }
+  .temp sup{font-size:.4em; font-weight:500; vertical-align:top; top:-0.2em; position:relative;}
+  .cond{
+    display:flex; flex-direction:column; gap:2px; padding-bottom:6px;
+  }
+  .cond-main{font-size:16px; font-weight:600;}
+  .cond-sub{font-size:13px; color:var(--mist); opacity:.8;}
+
+  .arc-zone{ position:relative; height:120px; margin-top:26px; }
+  .arc-zone svg{ width:100%; height:100%; overflow:visible; }
+  .arc-path{ fill:none; stroke:var(--line); stroke-width:1.5; stroke-dasharray:2 6; }
+  .sun-dot{ filter: drop-shadow(0 0 10px rgba(255,111,76,.9)); }
+  .moon-dot{ filter: drop-shadow(0 0 8px rgba(207,232,230,.7)); }
+
+  .sunmark{ font-size:11px; color:var(--mist); opacity:.7; letter-spacing:.02em; }
+
+  .horizon{
+    margin-top:auto;
+    position:relative;
+  }
+  .horizon svg{ width:100%; display:block; }
+
+  .stats{
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    border-top:1px solid var(--line);
+    padding:16px 0 26px;
+  }
+  .stat{ text-align:center; }
+  .stat b{
+    display:block; font-family:'Space Grotesk', sans-serif; font-size:19px; font-weight:700;
+  }
+  .stat span{
+    display:block; font-size:11px; color:var(--mist); opacity:.75; margin-top:2px;
+    text-transform:uppercase; letter-spacing:.08em;
+  }
+
+  .status{
+    font-size:12px; color:var(--mist); opacity:.55; text-align:center; padding-bottom:16px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #sky, #stars, body{ transition:none; }
+  }
+</style>
+</head>
+<body>
+  <div id="sky"></div>
+  <div id="stars"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="eyebrow" id="dateLabel">—</div>
+      <div class="badge" id="pwaBadge">PWA</div>
+    </header>
+
+    <h1 class="city">Boa <span id="dayPart">tarde</span>,<br/>Luanda</h1>
+
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="tz">Hora da África Ocidental (WAT) · UTC+1</div>
+
+    <div class="weather-row">
+      <div class="temp" id="temp">--<sup>°C</sup></div>
+      <div class="cond">
+        <div class="cond-main" id="condMain">A carregar…</div>
+        <div class="cond-sub" id="condSub">Sensação térmica —</div>
+      </div>
+    </div>
+
+    <div class="arc-zone">
+      <svg viewBox="0 0 300 100" preserveAspectRatio="none">
+        <path class="arc-path" d="M 10 90 Q 150 -10 290 90" />
+        <circle id="sunDot" class="sun-dot" cx="10" cy="90" r="7" fill="#FF6F4C" />
+      </svg>
+      <div class="sunmark" style="position:absolute; left:0; bottom:-2px;" id="sunriseLabel">— Nascer</div>
+      <div class="sunmark" style="position:absolute; right:0; bottom:-2px; text-align:right;" id="sunsetLabel">Pôr —</div>
+    </div>
+
+    <div class="horizon">
+      <svg viewBox="0 0 480 90" preserveAspectRatio="none">
+        <path d="M0,40 C40,20 80,55 130,35 C170,20 200,45 240,32 C280,20 320,50 360,30 C400,15 440,42 480,28 L480,90 L0,90 Z"
+              fill="#0B3540" opacity="0.9"/>
+        <path d="M0,55 C50,38 90,60 140,48 C190,35 230,58 280,45 C330,32 370,55 420,42 C445,36 465,44 480,40 L480,90 L0,90 Z"
+              fill="#071F2A"/>
+      </svg>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b id="humidity">--%</b><span>Humidade</span></div>
+      <div class="stat"><b id="wind">-- km/h</b><span>Vento</span></div>
+      <div class="stat"><b id="feels">--°</b><span>Sensação</span></div>
+    </div>
+
+    <div class="status" id="status">A obter dados do tempo…</div>
+  </div>
+
+<script>
+  const TZ = 'Africa/Luanda';
+  const LAT = -8.8368, LON = 13.2343;
+
+  // ---------- Clock ----------
+  const clockEl = document.getElementById('clock');
+  const dateEl = document.getElementById('dateLabel');
+  const dayPartEl = document.getElementById('dayPart');
+
+  const weekdayFmt = new Intl.DateTimeFormat('pt-PT', { timeZone: TZ, weekday: 'long' });
+  const dateFmt = new Intl.DateTimeFormat('pt-PT', { timeZone: TZ, day: '2-digit', month: 'long' });
+  const partsFmt = new Intl.DateTimeFormat('en-GB', {
+    timeZone: TZ, hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+
+  function luandaHourFloat(){
+    const parts = partsFmt.formatToParts(new Date());
+    const h = +parts.find(p=>p.type==='hour').value;
+    const m = +parts.find(p=>p.type==='minute').value;
+    const s = +parts.find(p=>p.type==='second').value;
+    return h + m/60 + s/3600;
+  }
+
+  // ---------- Sky gradient by time of day ----------
+  const stops = [
+    { h: 0,    top:'#050f1f', mid:'#071A2E', bot:'#0b2a3f' },
+    { h: 4.8,  top:'#050f1f', mid:'#071A2E', bot:'#0b2a3f' },
+    { h: 5.8,  top:'#2b3a55', mid:'#5c4a5e', bot:'#a85a4a' },
+    { h: 7,    top:'#123246', mid:'#0e5c63', bot:'#2f8f86' },
+    { h: 12.5, top:'#0a4a66', mid:'#157a82', bot:'#57b8ad' },
+    { h: 17,   top:'#1c3a55', mid:'#6a4a4a', bot:'#ff9a5c' },
+    { h: 18.4, top:'#1a2036', mid:'#3a2a4a', bot:'#ff6f4c' },
+    { h: 20,   top:'#0d1626', mid:'#0d2438', bot:'#123049' },
+    { h: 24,   top:'#050f1f', mid:'#071A2E', bot:'#0b2a3f' },
+  ];
+  function hex2rgb(hx){ const n=parseInt(hx.slice(1),16); return [n>>16&255,n>>8&255,n&255]; }
+  function mix(a,b,t){ return a.map((v,i)=>Math.round(v+(b[i]-v)*t)); }
+  function rgbCss(a){ return `rgb(${a[0]},${a[1]},${a[2]})`; }
+
+  const skyEl = document.getElementById('sky');
+  const starsEl = document.getElementById('stars');
+
+  function updateSky(hf){
+    let a = stops[0], b = stops[stops.length-1];
+    for(let i=0;i<stops.length-1;i++){
+      if(hf >= stops[i].h && hf <= stops[i+1].h){ a = stops[i]; b = stops[i+1]; break; }
+    }
+    const t = (hf - a.h) / (b.h - a.h || 1);
+    const top = rgbCss(mix(hex2rgb(a.top), hex2rgb(b.top), t));
+    const mid = rgbCss(mix(hex2rgb(a.mid), hex2rgb(b.mid), t));
+    const bot = rgbCss(mix(hex2rgb(a.bot), hex2rgb(b.bot), t));
+    skyEl.style.setProperty('--top', top);
+    skyEl.style.setProperty('--mid', mid);
+    skyEl.style.setProperty('--bot', bot);
+    document.body.style.background = mid;
+
+    const nightiness = (hf < 5.8 || hf > 19) ? 1 : (hf < 7 ? 1-((hf-5.8)/1.2) : (hf > 18.4 ? (hf-18.4)/0.6 : 0));
+    starsEl.style.opacity = Math.max(0, Math.min(1, nightiness)) * 0.9;
+  }
+
+  // ---------- Sun / moon arc ----------
+  let sunrise = 5.75, sunset = 18.25; // fallback defaults, refined by API
+  const sunDot = document.getElementById('sunDot');
+  const sunriseLabel = document.getElementById('sunriseLabel');
+  const sunsetLabel = document.getElementById('sunsetLabel');
+
+  function hFloatFromISO(iso){
+    // iso like 2026-07-23T05:47 already in Africa/Luanda local time (API timezone param)
+    const t = iso.split('T')[1];
+    const [hh,mm] = t.split(':').map(Number);
+    return hh + mm/60;
+  }
+  function fmtHM(hf){
+    const hh = Math.floor(hf).toString().padStart(2,'0');
+    const mm = Math.round((hf-Math.floor(hf))*60).toString().padStart(2,'0');
+    return `${hh}:${mm}`;
+  }
+
+  function updateSunDot(hf){
+    let f, isDay;
+    if(hf >= sunrise && hf <= sunset){
+      f = (hf - sunrise) / (sunset - sunrise);
+      isDay = true;
+    } else {
+      // night arc from sunset -> next sunrise
+      const nightLen = (24 - sunset) + sunrise;
+      let elapsed = hf > sunset ? hf - sunset : (24 - sunset) + hf;
+      f = elapsed / nightLen;
+      isDay = false;
+    }
+    f = Math.max(0, Math.min(1, f));
+    const x = 10 + f*280;
+    const y = 90 - Math.sin(f*Math.PI) * 95;
+    sunDot.setAttribute('cx', x);
+    sunDot.setAttribute('cy', Math.max(-8,y));
+    sunDot.setAttribute('fill', isDay ? '#FF6F4C' : '#CFE8E6');
+    sunDot.setAttribute('r', isDay ? 7 : 5.5);
+    sunDot.setAttribute('class', isDay ? 'sun-dot' : 'moon-dot');
+  }
+
+  sunriseLabel.textContent = `${fmtHM(sunrise)} Nascer`;
+  sunsetLabel.textContent = `Pôr ${fmtHM(sunset)}`;
+
+  // ---------- Clock tick (needs stops/updateSky/updateSunDot defined above) ----------
+  function tick(){
+    const now = new Date();
+    const parts = partsFmt.formatToParts(now);
+    const h = parts.find(p=>p.type==='hour').value;
+    const m = parts.find(p=>p.type==='minute').value;
+    const s = parts.find(p=>p.type==='second').value;
+    clockEl.textContent = `${h}:${m}:${s}`;
+
+    const wk = weekdayFmt.format(now);
+    const dt = dateFmt.format(now);
+    dateEl.textContent = `${wk.charAt(0).toUpperCase()+wk.slice(1)}, ${dt}`;
+
+    const hf = +h;
+    dayPartEl.textContent = hf < 5 ? 'noite' : hf < 12 ? 'manhã' : hf < 18 ? 'tarde' : 'noite';
+
+    updateSky(luandaHourFloat());
+    updateSunDot(luandaHourFloat());
+  }
+  setInterval(tick, 1000);
+  tick();
+
+  // ---------- Weather ----------
+  const WCODES = {
+    0:['Céu limpo','☀'], 1:['Principalmente limpo','🌤'], 2:['Parcialmente nublado','⛅'], 3:['Nublado','☁'],
+    45:['Nevoeiro','🌫'], 48:['Nevoeiro gelado','🌫'],
+    51:['Chuvisco fraco','🌦'], 53:['Chuvisco','🌦'], 55:['Chuvisco forte','🌦'],
+    61:['Chuva fraca','🌧'], 63:['Chuva','🌧'], 65:['Chuva forte','🌧'],
+    80:['Aguaceiros','🌦'], 81:['Aguaceiros fortes','🌧'], 82:['Aguaceiros violentos','⛈'],
+    95:['Trovoada','⛈'], 96:['Trovoada c/ granizo','⛈'], 99:['Trovoada c/ granizo','⛈']
+  };
+
+  async function loadWeather(){
+    const statusEl = document.getElementById('status');
+    try{
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}` +
+        `&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m` +
+        `&daily=sunrise,sunset&timezone=Africa%2FLuanda`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const c = data.current;
+      document.getElementById('temp').innerHTML = `${Math.round(c.temperature_2m)}<sup>°C</sup>`;
+      document.getElementById('feels').textContent = `${Math.round(c.apparent_temperature)}°`;
+      document.getElementById('humidity').textContent = `${Math.round(c.relative_humidity_2m)}%`;
+      document.getElementById('wind').textContent = `${Math.round(c.wind_speed_10m)} km/h`;
+
+      const [desc] = WCODES[c.weather_code] || ['Condições variáveis',''];
+      document.getElementById('condMain').textContent = desc;
+      document.getElementById('condSub').textContent = `Sensação térmica ${Math.round(c.apparent_temperature)}°C`;
+
+      if(data.daily && data.daily.sunrise && data.daily.sunrise[0]){
+        sunrise = hFloatFromISO(data.daily.sunrise[0]);
+        sunset = hFloatFromISO(data.daily.sunset[0]);
+        sunriseLabel.textContent = `${fmtHM(sunrise)} Nascer`;
+        sunsetLabel.textContent = `Pôr ${fmtHM(sunset)}`;
+      }
+
+      statusEl.textContent = 'Dados actualizados agora · Open-Meteo';
+    }catch(err){
+      statusEl.textContent = 'Sem ligação — a mostrar últimos dados disponíveis';
+    }
+  }
+  loadWeather();
+  setInterval(loadWeather, 10 * 60 * 1000);
+
+  // ---------- Service worker ----------
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    });
+  }
+</script>
+</body>
+</html>
